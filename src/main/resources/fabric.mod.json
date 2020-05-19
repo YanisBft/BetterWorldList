@@ -1,0 +1,29 @@
+{
+    "schemaVersion": 1,
+    "id": "better-world-list",
+    "version": "${version}",
+
+    "name": "Better World List",
+    "description": "A mod adding a grid layout for the world list.",
+    "authors": [
+        "Yanis48"
+    ],
+    "contact": {
+        "homepage": "https://www.curseforge.com/minecraft/mc-mods/better-world-list",
+        "sources": "https://github.com/Yanis48/BetterWorldList",
+        "issues": "https://github.com/Yanis48/BetterWorldList/issues"
+    },
+
+    "license": "GPLv3",
+    "icon": "assets/better-world-list/icon.png",
+
+    "environment": "client",
+    "mixins": [
+        "better-world-list.mixins.json"
+    ],
+
+    "depends": {
+        "fabricloader": ">=0.8.2",
+        "fabric": "*"
+    }
+}

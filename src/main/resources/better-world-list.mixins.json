@@ -1,0 +1,12 @@
+{
+    "required": true,
+    "package": "com.yanis48.betterworldlist.mixin",
+    "compatibilityLevel": "JAVA_8",
+    "client": [
+        "SelectWorldScreenAccessor",
+        "SelectWorldScreenMixin"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}
