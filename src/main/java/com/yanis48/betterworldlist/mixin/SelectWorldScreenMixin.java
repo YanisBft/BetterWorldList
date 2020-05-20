@@ -85,9 +85,9 @@ public class SelectWorldScreenMixin extends Screen {
 		// Play Selected World button
 		this.selectButton = this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 52, 150, 20, I18n.translate("selectWorld.select"), (buttonWidget) -> {
 			if (grid) {
-				this.gridLevelList.method_20159().ifPresent(GridWorldListWidget.Entry::edit);
+				this.gridLevelList.method_20159().ifPresent(GridWorldListWidget.Entry::play);
 			} else {
-				this.levelList.method_20159().ifPresent(WorldListWidget.Entry::edit);
+				this.levelList.method_20159().ifPresent(WorldListWidget.Entry::play);
 			}
 		}));
 		
@@ -108,18 +108,18 @@ public class SelectWorldScreenMixin extends Screen {
 		// Delete button
 		this.deleteButton = this.addButton(new ButtonWidget(this.width / 2 - 76, this.height - 28, 72, 20, I18n.translate("selectWorld.delete"), (buttonWidget) -> {
 			if (grid) {
-				this.gridLevelList.method_20159().ifPresent(GridWorldListWidget.Entry::edit);
+				this.gridLevelList.method_20159().ifPresent(GridWorldListWidget.Entry::delete);
 			} else {
-				this.levelList.method_20159().ifPresent(WorldListWidget.Entry::edit);
+				this.levelList.method_20159().ifPresent(WorldListWidget.Entry::delete);
 			}
 		}));
 		
 		// Recreate button
 		this.recreateButton = this.addButton(new ButtonWidget(this.width / 2 + 4, this.height - 28, 72, 20, I18n.translate("selectWorld.recreate"), (buttonWidget) -> {
 			if (grid) {
-				this.gridLevelList.method_20159().ifPresent(GridWorldListWidget.Entry::edit);
+				this.gridLevelList.method_20159().ifPresent(GridWorldListWidget.Entry::recreate);
 			} else {
-				this.levelList.method_20159().ifPresent(WorldListWidget.Entry::edit);
+				this.levelList.method_20159().ifPresent(WorldListWidget.Entry::recreate);
 			}
 		}));
 		
