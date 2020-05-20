@@ -52,7 +52,7 @@ public class SelectWorldScreenMixin extends Screen {
 		// Layout button
 		this.addButton(new TexturedButtonWidget(this.width / 2 - 126, 22, 20, 20, 0, 0, 20, grid ? HORIZONTAL_ICON_TEXTURE : GRID_ICON_TEXTURE, 32, 64, (buttonWidget) -> {
 			this.refreshScreen();
-		}, null));
+		}, ""));
 		
 		// Search box
 		this.searchBox = new TextFieldWidget(this.font, this.width / 2 - 100, 22, 200, 20, this.searchBox, I18n.translate("selectWorld.search"));

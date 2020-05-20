@@ -101,7 +101,7 @@ public class GridWorldListWidget extends AlwaysSelectedEntryListWidget<GridWorld
 		if (this.levels.isEmpty()) {
 			this.minecraft.openScreen(new CreateWorldScreen((Screen)null));
 		} else {
-			String string = ((String)supplier.get()).toLowerCase(Locale.ROOT);
+			String string = supplier.get().toLowerCase(Locale.ROOT);
 			Iterator<?> var5 = this.levels.iterator();
 			
 			while(true) {
@@ -152,17 +152,17 @@ public class GridWorldListWidget extends AlwaysSelectedEntryListWidget<GridWorld
 					float f = this.isFocused() ? 1.0F : 0.5F;
 					RenderSystem.color4f(f, f, f, 1.0F);
 					bufferBuilder.begin(7, VertexFormats.POSITION);
-					bufferBuilder.vertex((double) v, (double) (q + height + 2), 0.0D).next();
-					bufferBuilder.vertex((double) u, (double) (q + height + 2), 0.0D).next();
-					bufferBuilder.vertex((double) u, (double) (q - 2), 0.0D).next();
-					bufferBuilder.vertex((double) v, (double) (q - 2), 0.0D).next();
+					bufferBuilder.vertex(v, q + height + 2, 0.0D).next();
+					bufferBuilder.vertex(u, q + height + 2, 0.0D).next();
+					bufferBuilder.vertex(u, q - 2, 0.0D).next();
+					bufferBuilder.vertex(v, q - 2, 0.0D).next();
 					tessellator.draw();
 					RenderSystem.color4f(0.0F, 0.0F, 0.0F, 1.0F);
 					bufferBuilder.begin(7, VertexFormats.POSITION);
-					bufferBuilder.vertex((double) (v + 1), (double) (q + height + 1), 0.0D).next();
-					bufferBuilder.vertex((double) (u - 1), (double) (q + height + 1), 0.0D).next();
-					bufferBuilder.vertex((double) (u - 1), (double) (q - 1), 0.0D).next();
-					bufferBuilder.vertex((double) (v + 1), (double) (q - 1), 0.0D).next();
+					bufferBuilder.vertex(v + 1, q + height + 1, 0.0D).next();
+					bufferBuilder.vertex(u - 1, q + height + 1, 0.0D).next();
+					bufferBuilder.vertex(u - 1, q - 1, 0.0D).next();
+					bufferBuilder.vertex(v + 1, q - 1, 0.0D).next();
 					tessellator.draw();
 					RenderSystem.enableTexture();
 				}
@@ -512,7 +512,7 @@ public class GridWorldListWidget extends AlwaysSelectedEntryListWidget<GridWorld
 					createWorldScreen.recreateLevel(levelProperties);
 					if (this.level.isLegacyCustomizedWorld()) {
 						this.client.openScreen(new ConfirmScreen((bl) -> {
-							this.client.openScreen((Screen)(bl ? createWorldScreen : this.screen));
+							this.client.openScreen(bl ? createWorldScreen : this.screen);
 						}, new TranslatableText("selectWorld.recreate.customized.title", new Object[0]), new TranslatableText("selectWorld.recreate.customized.text", new Object[0]), I18n.translate("gui.proceed"), I18n.translate("gui.cancel")));
 					} else {
 						this.client.openScreen(createWorldScreen);
@@ -542,7 +542,7 @@ public class GridWorldListWidget extends AlwaysSelectedEntryListWidget<GridWorld
 					
 					NativeImageBackedTexture var6;
 					try {
-						NativeImage nativeImage = NativeImage.read((InputStream)inputStream);
+						NativeImage nativeImage = NativeImage.read(inputStream);
 						Validate.validState(nativeImage.getWidth() == 64, "Must be 64 pixels wide", new Object[0]);
 						Validate.validState(nativeImage.getHeight() == 64, "Must be 64 pixels high", new Object[0]);
 						NativeImageBackedTexture nativeImageBackedTexture = new NativeImageBackedTexture(nativeImage);
