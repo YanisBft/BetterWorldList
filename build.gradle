@@ -10,6 +10,8 @@ archivesBaseName = project.archives_base_name
 version = project.mod_version
 group = project.maven_group
 
+version = version + "-" + project.minecraft_version
+
 minecraft {
 }
 
@@ -19,6 +21,8 @@ dependencies {
 	modCompile "net.fabricmc:fabric-loader:${project.loader_version}"
 
 	modCompile "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+	
+	compileOnly group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.0'
 }
 
 processResources {

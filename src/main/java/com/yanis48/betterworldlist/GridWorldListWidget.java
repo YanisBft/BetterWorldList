@@ -16,6 +16,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
@@ -74,6 +76,7 @@ public class GridWorldListWidget extends AlwaysSelectedEntryListWidget<GridWorld
 	private static final Identifier UNKNOWN_SERVER_TEXTURE = new Identifier("textures/misc/unknown_server.png");
 	private static final Identifier WORLD_SELECTION_TEXTURE = new Identifier("textures/gui/world_selection.png");
 	private final SelectWorldScreen parent;
+	@Nullable
 	private List<LevelSummary> levels;
 	private boolean scrolling;
 	
@@ -106,7 +109,7 @@ public class GridWorldListWidget extends AlwaysSelectedEntryListWidget<GridWorld
 		if (this.levels.isEmpty()) {
 			this.client.openScreen(new CreateWorldScreen((Screen)null));
 		} else {
-			String string = ((String)supplier.get()).toLowerCase(Locale.ROOT);
+			String string = supplier.get().toLowerCase(Locale.ROOT);
 			Iterator<?> var5 = this.levels.iterator();
 			
 			while(true) {
@@ -157,17 +160,17 @@ public class GridWorldListWidget extends AlwaysSelectedEntryListWidget<GridWorld
 					float f = this.isFocused() ? 1.0F : 0.5F;
 					RenderSystem.color4f(f, f, f, 1.0F);
 					bufferBuilder.begin(7, VertexFormats.POSITION);
-					bufferBuilder.vertex((double) v, (double) (q + height + 2), 0.0D).next();
-					bufferBuilder.vertex((double) u, (double) (q + height + 2), 0.0D).next();
-					bufferBuilder.vertex((double) u, (double) (q - 2), 0.0D).next();
-					bufferBuilder.vertex((double) v, (double) (q - 2), 0.0D).next();
+					bufferBuilder.vertex(v, q + height + 2, 0.0D).next();
+					bufferBuilder.vertex(u, q + height + 2, 0.0D).next();
+					bufferBuilder.vertex(u, q - 2, 0.0D).next();
+					bufferBuilder.vertex(v, q - 2, 0.0D).next();
 					tessellator.draw();
 					RenderSystem.color4f(0.0F, 0.0F, 0.0F, 1.0F);
 					bufferBuilder.begin(7, VertexFormats.POSITION);
-					bufferBuilder.vertex((double) (v + 1), (double) (q + height + 1), 0.0D).next();
-					bufferBuilder.vertex((double) (u - 1), (double) (q + height + 1), 0.0D).next();
-					bufferBuilder.vertex((double) (u - 1), (double) (q - 1), 0.0D).next();
-					bufferBuilder.vertex((double) (v + 1), (double) (q - 1), 0.0D).next();
+					bufferBuilder.vertex(v + 1, q + height + 1, 0.0D).next();
+					bufferBuilder.vertex(u - 1, q + height + 1, 0.0D).next();
+					bufferBuilder.vertex(u - 1, q - 1, 0.0D).next();
+					bufferBuilder.vertex(v + 1, q - 1, 0.0D).next();
 					tessellator.draw();
 					RenderSystem.enableTexture();
 				}
@@ -509,7 +512,7 @@ public class GridWorldListWidget extends AlwaysSelectedEntryListWidget<GridWorld
 									}
 								}
 							} catch (IOException var17) {
-								SystemToast.method_27023(this.client, string);
+								SystemToast.addWorldAccessFailureToast(this.client, string);
 								GridWorldListWidget.LOGGER.error("Failed to backup level {}", string, var17);
 							}
 						}
@@ -550,7 +553,7 @@ public class GridWorldListWidget extends AlwaysSelectedEntryListWidget<GridWorld
 							}
 						}
 					} catch (IOException var17) {
-						SystemToast.method_27025(this.client, string);
+						SystemToast.addWorldDeleteFailureToast(this.client, string);
 						GridWorldListWidget.LOGGER.error("Failed to delete world {}", string, var17);
 					}
 					
@@ -584,7 +587,7 @@ public class GridWorldListWidget extends AlwaysSelectedEntryListWidget<GridWorld
 					this.client.openScreen(this.screen);
 				}, session));
 			} catch (IOException e) {
-				SystemToast.method_27023(this.client, levelName);
+				SystemToast.addWorldAccessFailureToast(this.client, levelName);
 				GridWorldListWidget.LOGGER.error("Failed to access level {}", levelName, e);
 				GridWorldListWidget.this.filter(() -> {
 					return ((SelectWorldScreenAccessor) this.screen).getSearchBox().getText();
@@ -604,7 +607,7 @@ public class GridWorldListWidget extends AlwaysSelectedEntryListWidget<GridWorld
 						CreateWorldScreen createWorldScreen = new CreateWorldScreen(this.screen);
 						if (this.level.isLegacyCustomizedWorld()) {
 							this.client.openScreen(new ConfirmScreen((bl) -> {
-								this.client.openScreen((Screen)(bl ? createWorldScreen : this.screen));
+								this.client.openScreen(bl ? createWorldScreen : this.screen);
 							}, new TranslatableText("selectWorld.recreate.customized.title"), new TranslatableText("selectWorld.recreate.customized.text"), ScreenTexts.PROCEED, ScreenTexts.CANCEL));
 						} else {
 							this.client.openScreen(createWorldScreen);
@@ -650,7 +653,7 @@ public class GridWorldListWidget extends AlwaysSelectedEntryListWidget<GridWorld
 					
 					NativeImageBackedTexture var6;
 					try {
-						NativeImage nativeImage = NativeImage.read((InputStream)inputStream);
+						NativeImage nativeImage = NativeImage.read(inputStream);
 						Validate.validState(nativeImage.getWidth() == 64, "Must be 64 pixels wide", new Object[0]);
 						Validate.validState(nativeImage.getHeight() == 64, "Must be 64 pixels high", new Object[0]);
 						NativeImageBackedTexture nativeImageBackedTexture = new NativeImageBackedTexture(nativeImage);
