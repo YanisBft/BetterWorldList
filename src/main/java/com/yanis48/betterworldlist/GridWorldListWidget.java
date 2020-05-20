@@ -16,8 +16,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import javax.annotation.Nullable;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
@@ -76,7 +74,6 @@ public class GridWorldListWidget extends AlwaysSelectedEntryListWidget<GridWorld
 	private static final Identifier UNKNOWN_SERVER_TEXTURE = new Identifier("textures/misc/unknown_server.png");
 	private static final Identifier WORLD_SELECTION_TEXTURE = new Identifier("textures/gui/world_selection.png");
 	private final SelectWorldScreen parent;
-	@Nullable
 	private List<LevelSummary> levels;
 	private boolean scrolling;
 	
