@@ -3,6 +3,7 @@
     "package": "com.yanis48.betterworldlist.mixin",
     "compatibilityLevel": "JAVA_8",
     "client": [
+        "EntryListWidgetAccessor",
         "SelectWorldScreenAccessor",
         "SelectWorldScreenMixin"
     ],

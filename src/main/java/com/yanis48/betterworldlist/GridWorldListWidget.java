@@ -23,12 +23,12 @@ import org.apache.logging.log4j.Logger;
 
 import com.google.common.hash.Hashing;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.yanis48.betterworldlist.mixin.EntryListWidgetAccessor;
 import com.yanis48.betterworldlist.mixin.SelectWorldScreenAccessor;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_5219;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
@@ -62,6 +62,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.SaveProperties;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.level.storage.LevelStorageException;
@@ -145,7 +146,7 @@ public class GridWorldListWidget extends AlwaysSelectedEntryListWidget<GridWorld
 				int width = this.getRowWidth();
 				int v;
 				int u;
-				if (this.renderSelection && this.isSelectedItem(index)) {
+				if (((EntryListWidgetAccessor) this).getRenderSelection() && this.isSelectedItem(index)) {
 					if (index % 2 == 0) {
 						v = this.left + this.width / 2 - width / 2;
 						u = this.left + this.width / 2 - 4;
@@ -385,6 +386,12 @@ public class GridWorldListWidget extends AlwaysSelectedEntryListWidget<GridWorld
 							tooltipText = new TranslatableText("selectWorld.tooltip.unsupported", new Object[]{this.level.getVersion()}).formatted(Formatting.RED);
 							this.screen.setTooltip(this.client.textRenderer.wrapLines(tooltipText, 175));
 						}
+					} else if (this.level.isLegacyCustomizedWorld()) {
+						DrawableHelper.drawTexture(matrices, x, y, 96.0F, k, 32, 32, 256, 256);
+						if (arrowHovered) {
+							tooltipText = new TranslatableText("selectWorld.tooltip.experimental").formatted(Formatting.RED);
+							this.screen.setTooltip(this.client.textRenderer.wrapLines(tooltipText, 175));
+						}
 					} else if (this.level.isFutureLevel()) {
 						DrawableHelper.drawTexture(matrices, x, y, 96.0F, k, 32, 32, 256, 256);
 						if (arrowHovered) {
@@ -599,7 +606,7 @@ public class GridWorldListWidget extends AlwaysSelectedEntryListWidget<GridWorld
 				Throwable var3 = null;
 				
 				try {
-					class_5219 lv = session.readLevelProperties();
+					SaveProperties lv = session.readLevelProperties();
 					if (lv != null) {
 						CreateWorldScreen createWorldScreen = new CreateWorldScreen(this.screen);
 						if (this.level.isLegacyCustomizedWorld()) {
