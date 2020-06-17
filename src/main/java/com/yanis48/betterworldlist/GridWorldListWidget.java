@@ -38,12 +38,14 @@ import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.FatalErrorScreen;
 import net.minecraft.client.gui.screen.NoticeScreen;
 import net.minecraft.client.gui.screen.ProgressScreen;
+import net.minecraft.client.gui.screen.SaveLevelScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.world.CreateWorldScreen;
 import net.minecraft.client.gui.screen.world.EditWorldScreen;
 import net.minecraft.client.gui.screen.world.SelectWorldScreen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
+import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
@@ -281,9 +283,10 @@ public class GridWorldListWidget extends AlwaysSelectedEntryListWidget<GridWorld
 	}
 	
 	@Override
-	protected void moveSelection(int amount) {
-		super.moveSelection(amount);
-		this.parent.worldSelected(true);
+	protected void moveSelection(EntryListWidget.class_5403 arg) {
+		this.method_30013(arg, (entry) -> {
+			return !entry.level.isLocked();
+		});
 	}
 	
 	public Optional<GridWorldListWidget.Entry> method_20159() {
@@ -531,17 +534,17 @@ public class GridWorldListWidget extends AlwaysSelectedEntryListWidget<GridWorld
 								if (var5 != null) {
 									try {
 										session.close();
-									} catch (Throwable var14) {
-										var5.addSuppressed(var14);
+									} catch (Throwable e) {
+										var5.addSuppressed(e);
 									}
 								} else {
 									session.close();
 								}
 							}
 						}
-					} catch (IOException var17) {
+					} catch (IOException e) {
 						SystemToast.addWorldDeleteFailureToast(this.client, string);
-						GridWorldListWidget.LOGGER.error("Failed to delete world {}", string, var17);
+						GridWorldListWidget.LOGGER.error("Failed to delete world {}", string, e);
 					}
 					
 					GridWorldListWidget.this.filter(() -> {
@@ -583,6 +586,7 @@ public class GridWorldListWidget extends AlwaysSelectedEntryListWidget<GridWorld
 		}
 		
 		public void recreate() {
+			this.method_29990();
 			RegistryTracker.Modifiable tracker = RegistryTracker.create();
 			
 			try {
@@ -590,12 +594,12 @@ public class GridWorldListWidget extends AlwaysSelectedEntryListWidget<GridWorld
 				Throwable var3 = null;
 				
 				try {
-					MinecraftClient.IntegratedResourceManager lv = this.client.method_29604(tracker, MinecraftClient::method_29598, MinecraftClient::createSaveProperties, false, session);
+					MinecraftClient.IntegratedResourceManager integratedResourceManager = this.client.method_29604(tracker, MinecraftClient::method_29598, MinecraftClient::createSaveProperties, false, session);
 					Throwable var5 = null;
 					
 					try {
-						LevelInfo levelInfo = lv.getSaveProperties().getLevelInfo();
-						GeneratorOptions generatorOptions = lv.getSaveProperties().getGeneratorOptions();
+						LevelInfo levelInfo = integratedResourceManager.getSaveProperties().getLevelInfo();
+						GeneratorOptions generatorOptions = integratedResourceManager.getSaveProperties().getGeneratorOptions();
 						Path path = CreateWorldScreen.method_29685(session.getDirectory(WorldSavePath.DATAPACKS), this.client);
 						if (generatorOptions.isLegacyCustomizedType()) {
 							this.client.openScreen(new ConfirmScreen((bl) -> {
@@ -608,15 +612,15 @@ public class GridWorldListWidget extends AlwaysSelectedEntryListWidget<GridWorld
 						var5 = e;
 						throw e;
 					} finally {
-						if (lv != null) {
+						if (integratedResourceManager != null) {
 							if (var5 != null) {
 								try {
-									lv.close();
+									integratedResourceManager.close();
 								} catch (Throwable var31) {
 									var5.addSuppressed(var31);
 								}
 							} else {
-								lv.close();
+								integratedResourceManager.close();
 							}
 						}
 					}
@@ -628,8 +632,8 @@ public class GridWorldListWidget extends AlwaysSelectedEntryListWidget<GridWorld
 						if (var3 != null) {
 							try {
 								session.close();
-							} catch (Throwable var12) {
-								var3.addSuppressed(var12);
+							} catch (Throwable e) {
+								var3.addSuppressed(e);
 							}
 						} else {
 							session.close();
@@ -647,8 +651,13 @@ public class GridWorldListWidget extends AlwaysSelectedEntryListWidget<GridWorld
 		private void start() {
 			this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 			if (this.client.getLevelStorage().levelExists(this.level.getName())) {
+				this.method_29990();
 				this.client.startIntegratedServer(this.level.getName());
 			}
+		}
+		
+		private void method_29990() {
+			this.client.method_29970(new SaveLevelScreen(new TranslatableText("selectWorld.data_read")));
 		}
 		
 		private NativeImageBackedTexture getIconTexture() {
