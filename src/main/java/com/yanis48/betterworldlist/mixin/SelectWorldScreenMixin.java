@@ -47,7 +47,7 @@ public class SelectWorldScreenMixin extends Screen {
 	private void init(CallbackInfo ci) {
 		SelectWorldScreen selectWorldScreen = (SelectWorldScreen) (Object) this;
 		
-		this.client.keyboard.enableRepeatEvents(true);
+		this.client.keyboard.setRepeatEvents(true);
 		
 		// Layout button
 		this.addButton(new TexturedButtonWidget(this.width / 2 - 126, 22, 20, 20, 0, 0, 20, grid ? HORIZONTAL_ICON_TEXTURE : GRID_ICON_TEXTURE, 32, 64, (buttonWidget) -> {
@@ -93,7 +93,7 @@ public class SelectWorldScreenMixin extends Screen {
 		
 		// Create New World button
 		this.addButton(new ButtonWidget(this.width / 2 + 4, this.height - 52, 150, 20, new TranslatableText("selectWorld.create"), (buttonWidget) -> {
-			this.client.openScreen(new CreateWorldScreen(this));
+			this.client.openScreen(CreateWorldScreen.method_31130(this));
 		}));
 		
 		// Edit button
@@ -153,7 +153,7 @@ public class SelectWorldScreenMixin extends Screen {
 		}
 		
 		this.searchBox.render(matrices, mouseX, mouseY, delta);
-		this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
+		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
 		
 		if (this.tooltipText != null) {
@@ -162,7 +162,7 @@ public class SelectWorldScreenMixin extends Screen {
 		
 		int x = this.width / 2 - 126;
 		int y = 22;
-		if ((mouseX >= x) && (mouseX <= x + 20) && (mouseY >= y) && (mouseY <= y + 20)) {
+		if ((mouseX >= x) && (mouseX <= x + 19) && (mouseY >= y) && (mouseY <= y + 19)) {
 			this.renderTooltip(matrices, grid ? horizontalLayout : gridLayout, mouseX, mouseY);
 		}
 		

@@ -56,10 +56,10 @@ import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.resource.DataPackSettings;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -67,7 +67,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.RegistryTracker;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -111,7 +111,7 @@ public class GridWorldListWidget extends AlwaysSelectedEntryListWidget<GridWorld
 		}
 		
 		if (this.levels.isEmpty()) {
-			this.client.openScreen(new CreateWorldScreen((Screen)null));
+			this.client.openScreen(CreateWorldScreen.method_31130((Screen)null));
 		} else {
 			String string = supplier.get().toLowerCase(Locale.ROOT);
 			Iterator<?> var5 = this.levels.iterator();
@@ -283,8 +283,8 @@ public class GridWorldListWidget extends AlwaysSelectedEntryListWidget<GridWorld
 	}
 	
 	@Override
-	protected void moveSelection(EntryListWidget.class_5403 arg) {
-		this.method_30013(arg, (entry) -> {
+	protected void moveSelection(EntryListWidget.MoveDirection direction) {
+		this.moveSelectionIf(direction, (entry) -> {
 			return !entry.level.isLocked();
 		});
 	}
@@ -380,7 +380,7 @@ public class GridWorldListWidget extends AlwaysSelectedEntryListWidget<GridWorld
 				if (this.level.isLocked()) {
 					DrawableHelper.drawTexture(matrices, x, y, 96.0F, k, 32, 32, 256, 256);
 					if (arrowHovered) {
-						StringRenderable tooltipText = new TranslatableText("selectWorld.locked").formatted(Formatting.RED);
+						Text tooltipText = new TranslatableText("selectWorld.locked").formatted(Formatting.RED);
 						this.screen.setTooltip(this.client.textRenderer.wrapLines(tooltipText, 175));
 					}
 				} else if (this.level.isDifferentVersion()) {
@@ -388,12 +388,12 @@ public class GridWorldListWidget extends AlwaysSelectedEntryListWidget<GridWorld
 					if (this.level.isFutureLevel()) {
 						DrawableHelper.drawTexture(matrices, x, y, 96.0F, k, 32, 32, 256, 256);
 						if (arrowHovered) {
-							this.screen.setTooltip(Arrays.asList(new TranslatableText("selectWorld.tooltip.fromNewerVersion1").formatted(Formatting.RED), new TranslatableText("selectWorld.tooltip.fromNewerVersion2").formatted(Formatting.RED)));
+							this.screen.setTooltip(Arrays.asList(new TranslatableText("selectWorld.tooltip.fromNewerVersion1").formatted(Formatting.RED).asOrderedText(), new TranslatableText("selectWorld.tooltip.fromNewerVersion2").formatted(Formatting.RED).asOrderedText()));
 						}
 					} else if (!SharedConstants.getGameVersion().isStable()) {
 						DrawableHelper.drawTexture(matrices, x, y, 64.0F, k, 32, 32, 256, 256);
 						if (arrowHovered) {
-							this.screen.setTooltip(Arrays.asList(new TranslatableText("selectWorld.tooltip.snapshot1").formatted(Formatting.GOLD), new TranslatableText("selectWorld.tooltip.snapshot2").formatted(Formatting.GOLD)));
+							this.screen.setTooltip(Arrays.asList(new TranslatableText("selectWorld.tooltip.snapshot1").formatted(Formatting.GOLD).asOrderedText(), new TranslatableText("selectWorld.tooltip.snapshot2").formatted(Formatting.GOLD).asOrderedText()));
 						}
 					}
 				} else {
@@ -587,26 +587,27 @@ public class GridWorldListWidget extends AlwaysSelectedEntryListWidget<GridWorld
 		
 		public void recreate() {
 			this.method_29990();
-			RegistryTracker.Modifiable tracker = RegistryTracker.create();
+			DynamicRegistryManager.Impl registryManager = DynamicRegistryManager.create();
 			
 			try {
 				LevelStorage.Session session = this.client.getLevelStorage().createSession(this.level.getName());
 				Throwable var3 = null;
 				
 				try {
-					MinecraftClient.IntegratedResourceManager integratedResourceManager = this.client.method_29604(tracker, MinecraftClient::method_29598, MinecraftClient::createSaveProperties, false, session);
+					MinecraftClient.IntegratedResourceManager integratedResourceManager = this.client.method_29604(registryManager, MinecraftClient::method_29598, MinecraftClient::createSaveProperties, false, session);
 					Throwable var5 = null;
 					
 					try {
 						LevelInfo levelInfo = integratedResourceManager.getSaveProperties().getLevelInfo();
+						DataPackSettings dataPackSettings = levelInfo.getDataPackSettings();
 						GeneratorOptions generatorOptions = integratedResourceManager.getSaveProperties().getGeneratorOptions();
 						Path path = CreateWorldScreen.method_29685(session.getDirectory(WorldSavePath.DATAPACKS), this.client);
 						if (generatorOptions.isLegacyCustomizedType()) {
 							this.client.openScreen(new ConfirmScreen((bl) -> {
-								this.client.openScreen((Screen)(bl ? new CreateWorldScreen(this.screen, levelInfo, generatorOptions, path, tracker) : this.screen));
+								this.client.openScreen((Screen)(bl ? new CreateWorldScreen(this.screen, levelInfo, generatorOptions, path, dataPackSettings, registryManager) : this.screen));
 							}, new TranslatableText("selectWorld.recreate.customized.title"), new TranslatableText("selectWorld.recreate.customized.text"), ScreenTexts.PROCEED, ScreenTexts.CANCEL));
 						} else {
-							this.client.openScreen(new CreateWorldScreen(this.screen, levelInfo, generatorOptions, path, tracker));
+							this.client.openScreen(new CreateWorldScreen(this.screen, levelInfo, generatorOptions, path, dataPackSettings, registryManager));
 						}
 					} catch (Throwable e) {
 						var5 = e;
